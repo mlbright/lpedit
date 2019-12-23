@@ -16,3 +16,4 @@
 *.tsv
 lpedit
 *.json
+dist/
