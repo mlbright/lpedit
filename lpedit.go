@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -61,6 +62,9 @@ func main() {
 				log.Fatalf("could not add account '%s': %v\n", account.Name, err)
 			}
 		}
+	} else {
+		fmt.Println("Unrecognized usage!\nUsage:\n")
+		flag.PrintDefaults()
 	}
 }
 
