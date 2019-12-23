@@ -51,7 +51,9 @@ func main() {
 		for _, account := range accounts {
 			err := client.Delete(context.Background(), account.ID)
 			if err != nil {
-				log.Fatalf("could not add account '%s': %v\n", account.Name, err)
+				log.Fatalf("could not delete account '%s': %v\n", account.Name, err)
+			} else {
+				fmt.Printf("account '%s': deleted!\n", account.Name)
 			}
 		}
 	} else if *in {
@@ -63,7 +65,7 @@ func main() {
 			}
 		}
 	} else {
-		fmt.Println("Unrecognized usage!\nUsage:\n")
+		fmt.Printf("Unrecognized usage!\nUsage:\n\n")
 		flag.PrintDefaults()
 	}
 }
