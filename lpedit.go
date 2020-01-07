@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -10,27 +11,42 @@ import (
 	"os"
 
 	"github.com/ansd/lastpass-go"
+	"github.com/manifoldco/promptui"
 )
 
 func main() {
 	email := flag.String("email", "", "LastPass email/account")
-	password := flag.String("password", "", "LastPass master password")
 	output := flag.Bool("out", false, "output LastPass credentials as JSON via STDOUT")
 	del := flag.Bool("del", false, "delete LastPass credentials piped through STDIN as JSON")
 	in := flag.Bool("in", false, "add or overwrite LastPass records")
 
 	flag.Parse()
 
+	validate := func(input string) error {
+		if input == "" {
+			return errors.New("blank password")
+		}
+		return nil
+	}
+
+	prompt := promptui.Prompt{
+		Label:    "LastPass Master Password",
+		Validate: validate,
+		Mask:     '*',
+	}
+
+	masterPassword, err := prompt.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		return
+	}
 	if *email == "" {
 		log.Fatalln("the LastPass email/account must be specified")
 	}
 
-	if *password == "" {
-		log.Fatalln("the LastPass master password must be specified")
-	}
-
 	// authenticate with LastPass servers
-	client, err := lastpass.NewClient(context.Background(), *email, *password)
+	client, err := lastpass.NewClient(context.Background(), *email, masterPassword)
 	if err != nil {
 		log.Fatalln(err)
 	}
